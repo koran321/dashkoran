@@ -412,33 +412,33 @@ export default function Dashboard() {
         animate={{ y: 0, opacity: 1 }}
         className="mb-8 border-b border-zinc-200 dark:border-zinc-800 pb-6"
       >
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-zinc-900 dark:bg-white rounded-2xl flex items-center justify-center text-white dark:text-zinc-900 shadow-xl shadow-zinc-500/20">
-              <span className="font-black text-xl">AK</span>
+        <div className="flex flex-wrap justify-between items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-zinc-900 dark:bg-white rounded-2xl flex items-center justify-center text-white dark:text-zinc-900 shadow-xl shadow-zinc-500/20 shrink-0">
+              <span className="font-black text-base sm:text-xl">AK</span>
             </div>
-            <div>
-              <h1 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-white uppercase italic">
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-2xl font-black tracking-tight text-zinc-900 dark:text-white uppercase italic truncate">
                 {t('title')}
               </h1>
-              <p className="text-zinc-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-widest">{t('subtitle')}</p>
+              <p className="text-zinc-500 dark:text-zinc-400 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest">{t('subtitle')}</p>
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
-             <div className="relative group">
+          <div className="flex items-center gap-2">
+             <div className="relative group hidden sm:block">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-indigo-500 transition-colors" size={16} />
                 <input 
                   type="text" 
                   placeholder={t('search_tasks')}
-                  className="pl-10 pr-4 py-2 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 focus:ring-2 focus:ring-indigo-500 outline-none w-48 sm:w-64 transition-all text-sm"
+                  className="pl-10 pr-4 py-2 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 focus:ring-2 focus:ring-indigo-500 outline-none w-40 sm:w-56 transition-all text-sm"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
             </div>
             <button 
               onClick={toggleLang}
-              className="px-4 py-2 text-xs font-black uppercase tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 rounded-2xl transition-all shadow-2xl text-indigo-400 backdrop-blur-md"
+              className="px-3 py-2 text-xs font-black uppercase tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 rounded-2xl transition-all text-indigo-400 backdrop-blur-md"
             >
               <AnimatePresence mode="wait">
                 <motion.span
@@ -455,7 +455,7 @@ export default function Dashboard() {
             </button>
             <button 
               onClick={toggleTheme}
-              className="p-2.5 border border-white/10 bg-white/5 hover:bg-white/10 rounded-2xl transition-all shadow-2xl text-zinc-400 backdrop-blur-md"
+              className="p-2.5 border border-white/10 bg-white/5 hover:bg-white/10 rounded-2xl transition-all text-zinc-400 backdrop-blur-md"
             >
               <AnimatePresence mode="wait">
                 <motion.div
@@ -472,7 +472,21 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <nav className="flex gap-6 mt-6 text-sm font-medium overflow-x-auto whitespace-nowrap hide-scrollbar">
+        {/* Mobile search */}
+        <div className="sm:hidden mt-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
+            <input 
+              type="text" 
+              placeholder={t('search_tasks')}
+              className="pl-10 pr-4 py-2.5 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 focus:ring-2 focus:ring-indigo-500 outline-none w-full transition-all text-sm"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <nav className="flex gap-1 mt-4 overflow-x-auto pb-1 hide-scrollbar">
           {[
             { id: "dashboard", label: t('nav_overview'), icon: LayoutDashboard },
             { id: "tasks", label: t('nav_active'), icon: Briefcase },
@@ -485,15 +499,15 @@ export default function Dashboard() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`pb-3 px-1 transition-all relative font-bold uppercase tracking-widest text-[10px] ${
+              className={`pb-3 px-2 sm:px-3 transition-all relative font-bold uppercase tracking-widest text-[9px] sm:text-[10px] whitespace-nowrap shrink-0 ${
                 activeTab === tab.id 
                   ? "text-zinc-900 dark:text-white" 
                   : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300"
               }`}
             >
-              <span className="flex items-center gap-2">
-                <tab.icon size={12} />
-                {tab.label}
+              <span className="flex items-center gap-1.5">
+                <tab.icon size={11} />
+                <span className="hidden xs:inline sm:inline">{tab.label}</span>
               </span>
               {activeTab === tab.id && (
                 <motion.div 
@@ -590,8 +604,8 @@ export default function Dashboard() {
 
           {activeTab === "tasks" && (
             <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div className="flex items-center gap-4 w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
                   <CustomDropdown 
                     options={[
                       { value: "all", label: t('filter_all_types') },
@@ -613,7 +627,7 @@ export default function Dashboard() {
                 </div>
                 <button 
                   onClick={() => { setEditingItem(null); setModals({...modals, task: true}); }}
-                  className="px-6 py-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2"
+                  className="w-full sm:w-auto px-6 py-2.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2"
                 >
                   {t('btn_new_task')}
                 </button>
@@ -666,19 +680,19 @@ export default function Dashboard() {
 
           {activeTab === "clients" && (
             <div className="space-y-6">
-              <div className="flex justify-between items-center">
+              <div className="flex flex-wrap justify-between items-center gap-3">
                  <h2 className="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-[4px]">{t('nav_clients')}</h2>
-                 <div className="flex gap-3">
-                    <button onClick={handleRevealPhone} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${phoneUnlocked ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'}`}>
-                        {phoneUnlocked ? <EyeOff size={14} /> : <Eye size={14} />}
-                        {phoneUnlocked ? "Lock Numbers" : "Reveal Numbers"}
+                 <div className="flex gap-2">
+                    <button onClick={handleRevealPhone} className={`px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-all ${phoneUnlocked ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'}`}>
+                        {phoneUnlocked ? <EyeOff size={13} /> : <Eye size={13} />}
+                        <span className="hidden sm:inline">{phoneUnlocked ? "Lock" : "Reveal"}</span>
                     </button>
-                    <button onClick={() => { setEditingItem(null); setModals({...modals, client: true}); }} className="px-6 py-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2">
-                        {t('btn_new_client')}
+                    <button onClick={() => { setEditingItem(null); setModals({...modals, client: true}); }} className="px-4 py-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2">
+                        + {t('btn_new_client')}
                     </button>
                  </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {clients.map((client) => (
                   <motion.div 
                     key={client._id}
@@ -738,7 +752,7 @@ export default function Dashboard() {
                     <Plus size={14} /> {t('btn_new_writer')}
                  </MagneticButton>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {writers.map((writer) => {
                   const wStat = writerStats.find(s => s._id === writer.name || s._id === writer._id);
                   return (
@@ -761,13 +775,13 @@ export default function Dashboard() {
 
           {activeTab === "expenses" && (
             <div className="space-y-6">
-              <div className="flex justify-between items-center">
+              <div className="flex flex-wrap justify-between items-center gap-3">
                  <h2 className="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-[4px]">{t('nav_accounts')}</h2>
-                 <button onClick={() => { setEditingItem(null); setModals({...modals, expense: true}); }} className="px-6 py-2 bg-rose-500 text-white rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2 shadow-lg shadow-rose-500/20">
+                 <button onClick={() => { setEditingItem(null); setModals({...modals, expense: true}); }} className="px-4 py-2 bg-rose-500 text-white rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2 shadow-lg shadow-rose-500/20">
                     {t('btn_log_expense')}
                  </button>
               </div>
-              <div className="glass rounded-[32px] border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-xl shadow-zinc-500/5">
+              <div className="glass rounded-[32px] border border-zinc-200 dark:border-zinc-800 overflow-x-auto shadow-xl shadow-zinc-500/5">
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-zinc-50 dark:bg-white/5 text-[10px] font-black uppercase tracking-widest text-zinc-500">

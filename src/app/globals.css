@@ -71,4 +71,18 @@ body::before {
   .accent-glow {
     box-shadow: 0 0 40px -10px rgba(99, 102, 241, 0.3);
   }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Mobile safe area */
+@media (max-width: 640px) {
+  .glass-card {
+    border-radius: 1rem;
+  }
 }

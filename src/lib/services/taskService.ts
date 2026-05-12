@@ -74,16 +74,11 @@ export class TaskService {
       {
         $lookup: {
           from: "clients",
-          let: { clientId: "$client" },
+          let: { clientId: { $toString: "$client" } },
           pipeline: [
             { 
               $match: { 
-                $expr: { 
-                  $or: [
-                    { $eq: ["$_id", "$$clientId"] },
-                    { $eq: ["$_id", { $toObjectId: "$$clientId" }] }
-                  ] 
-                } 
+                $expr: { $eq: [{ $toString: "$_id" }, "$$clientId"] }
               } 
             }
           ],
@@ -92,18 +87,17 @@ export class TaskService {
       },
       {
         $addFields: {
-          client: { $arrayElemAt: ["$clientData", 0] },
+          clientInfo: { $arrayElemAt: ["$clientData", 0] },
           _id: { $toString: "$_id" }
         }
       },
       {
         $addFields: {
-          "client._id": { $toString: "$client._id" },
-          "clientName": "$client.name",
-          "clientUniversity": "$client.university"
+          "clientName": { $ifNull: ["$clientInfo.name", "Client"] },
+          "clientUniversity": { $ifNull: ["$clientInfo.university", ""] }
         }
       },
-      { $project: { clientData: 0 } }
+      { $project: { clientData: 0, clientInfo: 0 } }
     ]).toArray();
     return tasks[0];
   }
