@@ -688,7 +688,7 @@ export default function Dashboard() {
                         <span className="hidden sm:inline">{phoneUnlocked ? "Lock" : "Reveal"}</span>
                     </button>
                     <button onClick={() => { setEditingItem(null); setModals({...modals, client: true}); }} className="px-4 py-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2">
-                        + {t('btn_new_client')}
+                        {t('btn_new_client')}
                     </button>
                  </div>
               </div>
