@@ -52,7 +52,9 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       clientName,
     });
   } catch (error: any) {
-    console.error("[TRACK API ERROR]", error);
-    return NextResponse.json({ error: "Unable to fetch order. Please try again." }, { status: 500 });
+    console.error("[TRACK API ERROR]", error?.message, error?.stack);
+    return NextResponse.json({ 
+      error: error?.message || "Unknown server error",
+    }, { status: 500 });
   }
 }

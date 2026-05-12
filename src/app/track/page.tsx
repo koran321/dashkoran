@@ -18,11 +18,11 @@ export default function TrackingPage() {
     setError("");
     try {
       const res = await fetch(`/api/track/${id.trim().toUpperCase()}`);
+      let data: any = {};
+      try { data = await res.json(); } catch {}
       if (!res.ok) {
-        throw new Error(res.status === 404 ? "Order not found. Please check your Order ID." : "Server error. Please try again.");
+        throw new Error(data?.error || (res.status === 404 ? "Order not found." : `Error ${res.status}`));
       }
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
       setTask(data);
     } catch (err: any) {
       setError(err.message || "Something went wrong.");
