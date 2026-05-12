@@ -17,7 +17,7 @@ export default function TrackingPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`/api/tasks/${id.trim().toUpperCase()}`);
+      const res = await fetch(`/api/track/${id.trim().toUpperCase()}`);
       if (!res.ok) {
         throw new Error(res.status === 404 ? "Order not found. Please check your Order ID." : "Server error. Please try again.");
       }
