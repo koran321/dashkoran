@@ -253,9 +253,10 @@ export default function Dashboard() {
   };
 
   const handleInvoiceDownload = (task: any) => {
+    const client = clients.find(c => c._id === task.clientId);
     setPendingAction({
         fn: () => {
-            generatePDFInvoice(task);
+            generatePDFInvoice(task, client);
             showNotification("Generating Invoice PDF...", "info");
         },
         message: t('msg_auth_inv'),

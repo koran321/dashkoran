@@ -32,19 +32,21 @@ export class ClientService {
 
   static async create(clientData: Partial<Client>) {
     const db = await getDb();
+    const { _id, ...data } = clientData;
     const result = await db.collection("clients").insertOne({
-      ...clientData,
+      ...data,
       createdAt: new Date(),
       updatedAt: new Date()
-    });
+    } as any);
     return result.insertedId;
   }
 
   static async update(id: string, clientData: Partial<Client>) {
     const db = await getDb();
+    const { _id, ...data } = clientData;
     await db.collection("clients").updateOne(
       { _id: new ObjectId(id) },
-      { $set: { ...clientData, updatedAt: new Date() } }
+      { $set: { ...data, updatedAt: new Date() } }
     );
   }
 

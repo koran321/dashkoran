@@ -110,21 +110,23 @@ export class TaskService {
 
   static async create(taskData: Partial<Task>) {
     const db = await getDb();
+    const { _id, ...data } = taskData;
     const orderId = Math.random().toString(36).substring(2, 8).toUpperCase();
     const result = await db.collection("assignment").insertOne({
-      ...taskData,
+      ...data,
       orderId,
       createdAt: new Date(),
       updatedAt: new Date()
-    });
+    } as any);
     return result.insertedId;
   }
 
   static async update(id: string, taskData: Partial<Task>) {
     const db = await getDb();
+    const { _id, ...data } = taskData;
     await db.collection("assignment").updateOne(
       { _id: new ObjectId(id) },
-      { $set: { ...taskData, updatedAt: new Date() } }
+      { $set: { ...data, updatedAt: new Date() } }
     );
   }
 

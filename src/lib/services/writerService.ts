@@ -22,19 +22,21 @@ export class WriterService {
 
   static async create(writerData: Partial<Writer>) {
     const db = await getDb();
+    const { _id, ...data } = writerData;
     const result = await db.collection("writers").insertOne({
-      ...writerData,
+      ...data,
       createdAt: new Date(),
       updatedAt: new Date()
-    });
+    } as any);
     return result.insertedId;
   }
 
   static async update(id: string, writerData: Partial<Writer>) {
     const db = await getDb();
+    const { _id, ...data } = writerData;
     await db.collection("writers").updateOne(
       { _id: new ObjectId(id) },
-      { $set: { ...writerData, updatedAt: new Date() } }
+      { $set: { ...data, updatedAt: new Date() } }
     );
   }
 
