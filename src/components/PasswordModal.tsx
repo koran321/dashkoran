@@ -13,13 +13,15 @@ export function PasswordModal({
   onClose, 
   onVerify, 
   message,
-  requiredPassword
+  requiredPassword,
+  customVerify
 }: { 
   isOpen: boolean; 
   onClose: () => void; 
   onVerify: () => void; 
   message: string;
   requiredPassword: string;
+  customVerify?: (password: string) => Promise<void>;
 }) {
   const { t } = useTranslation();
   const [password, setPassword] = useState("");
@@ -27,12 +29,13 @@ export function PasswordModal({
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
-    setTimeout(() => {
-      if (password === requiredPassword) {
+    try {
+      if (customVerify) {
+        await customVerify(password);
         setSuccess(true);
         setTimeout(() => {
           setPassword("");
@@ -42,10 +45,25 @@ export function PasswordModal({
           onClose();
         }, 800);
       } else {
-        setError(true);
+        await new Promise(resolve => setTimeout(resolve, 600));
+        if (password === requiredPassword) {
+          setSuccess(true);
+          setTimeout(() => {
+            setPassword("");
+            setError(false);
+            setSuccess(false);
+            onVerify();
+            onClose();
+          }, 800);
+        } else {
+          setError(true);
+        }
       }
+    } catch (err) {
+      setError(true);
+    } finally {
       setLoading(false);
-    }, 600);
+    }
   };
 
   return (

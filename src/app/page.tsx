@@ -59,6 +59,8 @@ export default function Dashboard() {
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [phoneUnlocked, setPhoneUnlocked] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
@@ -82,8 +84,55 @@ export default function Dashboard() {
   } | null>(null);
 
   useEffect(() => {
-    fetchData();
+    checkSession();
   }, []);
+
+  async function checkSession() {
+    const sessionId = localStorage.getItem("ak_session_id");
+    if (!sessionId) {
+      setAuthLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/sessions/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId })
+      });
+      const data = await res.json();
+      if (data.valid) {
+        setIsAuthenticated(true);
+        fetchData();
+      }
+    } catch (error) {
+      console.error("Session verification failed");
+    } finally {
+      setAuthLoading(false);
+    }
+  }
+
+  async function handlePublicLogin(password: string) {
+    try {
+      const res = await fetch("/api/sessions/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password })
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem("ak_session_id", data.sessionId);
+        setIsAuthenticated(true);
+        fetchData();
+        showNotification("Welcome back to Agency OS!");
+      } else {
+        throw new Error("Invalid password");
+      }
+    } catch (error) {
+      showNotification("Invalid entry password", "error");
+      throw error; // Re-throw to show error in PasswordModal
+    }
+  }
 
   async function fetchData() {
     try {
@@ -335,6 +384,25 @@ export default function Dashboard() {
   });
 
   // --- RENDER ---
+
+  if (authLoading) return null;
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#050816] flex items-center justify-center p-6 font-satoshi">
+        <div className="w-full max-w-md">
+          <PasswordModal 
+            isOpen={true}
+            onClose={() => {}} 
+            onVerify={() => {}}
+            message="Agency OS: Public Entry Required"
+            requiredPassword="ss11"
+            customVerify={handlePublicLogin}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen max-w-7xl mx-auto p-4 sm:p-8">
