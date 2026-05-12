@@ -39,26 +39,25 @@ export const tabVariants: Variants = {
   }
 }
 
-export const modalVariants: Variants = {
-  backdrop: {
-    initial: { opacity: 0 },
-    animate: { opacity: 1 },
-    exit: { opacity: 0 }
+export const modalBackdropVariants: Variants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 }
+}
+
+export const modalPanelVariants: Variants = {
+  initial: { opacity: 0, scale: 0.92, y: 40 },
+  animate: { 
+    opacity: 1, 
+    scale: 1, 
+    y: 0,
+    transition: { type: 'spring', stiffness: 280, damping: 26 }
   },
-  panel: {
-    initial: { opacity: 0, scale: 0.92, y: 40 },
-    animate: { 
-      opacity: 1, 
-      scale: 1, 
-      y: 0,
-      transition: { type: 'spring', stiffness: 280, damping: 26 }
-    },
-    exit: { 
-      opacity: 0, 
-      scale: 0.94, 
-      y: 20,
-      transition: { duration: 0.2 }
-    }
+  exit: { 
+    opacity: 0, 
+    scale: 0.94, 
+    y: 20,
+    transition: { duration: 0.2 }
   }
 }
 

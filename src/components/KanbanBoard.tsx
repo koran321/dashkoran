@@ -9,6 +9,7 @@ import {
   GripVertical 
 } from "lucide-react";
 import { useTranslation } from "./LanguageProvider";
+import { useNotification } from "./NotificationProvider";
 import { 
   DragDropContext, 
   Droppable, 
@@ -38,6 +39,7 @@ export function KanbanBoard({
   onEdit: (task: Task) => void
 }) {
   const { t } = useTranslation();
+  const { showNotification } = useNotification();
   const [localTasks, setLocalTasks] = useState<Task[]>(tasks);
 
   useEffect(() => {
@@ -74,6 +76,11 @@ export function KanbanBoard({
     onUpdateStatus(draggableId, newStatus);
   };
 
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    showNotification(`Order ID ${text} copied to clipboard!`, "success");
+  };
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
@@ -99,89 +106,102 @@ export function KanbanBoard({
                   </span>
                 </div>
 
-                <AnimatePresence>
-                  {localTasks
-                    .filter((t) => t.status === col.id)
-                    .map((task, index) => (
-                      <Draggable key={task._id} draggableId={task._id} index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={`group relative outline-none ${snapshot.isDragging ? "z-50" : ""}`}
-                          >
-                            <motion.div 
-                              layoutId={`card-${task._id}`}
-                              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                              animate={{ opacity: 1, scale: 1, y: 0 }}
-                              exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                              whileDrag={{ scale: 1.04, rotate: 1.5, boxShadow: '0 25px 50px -12px rgba(99,102,241,0.3)' }}
-                              className={`glass-card p-5 border shadow-2xl ${
-                                snapshot.isDragging 
-                                  ? "border-indigo-500/50 bg-indigo-500/10" 
-                                  : "border-white/5 hover:border-white/20"
-                              } space-y-4 transition-all duration-200`}
+                <div className="space-y-4">
+                  <AnimatePresence initial={false}>
+                    {localTasks
+                      .filter((t) => t.status === col.id)
+                      .map((task, index) => (
+                        <Draggable key={task._id} draggableId={task._id} index={index}>
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              className={`group relative outline-none ${snapshot.isDragging ? "z-50" : ""}`}
+                              style={{
+                                ...provided.draggableProps.style,
+                                cursor: snapshot.isDragging ? 'grabbing' : 'grab'
+                              }}
                             >
-                              <div className="flex justify-between items-start">
-                                <div className="flex items-center gap-3">
-                                  <GripVertical size={14} className="text-zinc-600 group-hover:text-indigo-400 transition-colors" />
-                                  <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest bg-indigo-500/10 px-2.5 py-1 rounded-lg border border-indigo-500/20">
-                                    #{task.orderId}
-                                  </span>
+                              <motion.div 
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                transition={{ duration: 0.2 }}
+                                className={`glass-card p-5 border shadow-2xl ${
+                                  snapshot.isDragging 
+                                    ? "border-indigo-500/50 bg-indigo-500/10 scale-[1.02] rotate-[1deg]" 
+                                    : "border-white/5 hover:border-white/20"
+                                } space-y-4 transition-all duration-200`}
+                              >
+                                <div className="flex justify-between items-start">
+                                  <div className="flex items-center gap-3">
+                                    <GripVertical size={14} className="text-zinc-600 group-hover:text-indigo-400 transition-colors" />
+                                    <motion.span 
+                                      whileHover={{ scale: 1.05 }}
+                                      whileTap={{ scale: 0.95 }}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        copyToClipboard(task.orderId);
+                                      }}
+                                      className="text-[10px] font-black text-indigo-400 uppercase tracking-widest bg-indigo-500/10 px-2.5 py-1 rounded-lg border border-indigo-500/20 cursor-pointer active:bg-indigo-500/30 transition-colors"
+                                    >
+                                      #{task.orderId}
+                                    </motion.span>
+                                  </div>
+                                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                    <motion.button 
+                                      whileHover={{ scale: 1.2, rotate: 8 }}
+                                      whileTap={{ scale: 0.9 }}
+                                      onClick={(e) => { e.stopPropagation(); onEdit(task); }} 
+                                      className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-zinc-400 hover:text-white transition-colors"
+                                    >
+                                      <Edit size={14} />
+                                    </motion.button>
+                                    <motion.button 
+                                      whileHover={{ scale: 1.2, rotate: -8 }}
+                                      whileTap={{ scale: 0.9 }}
+                                      onClick={(e) => { e.stopPropagation(); onUpdateStatus(task._id, "done"); }} 
+                                      className="p-1.5 bg-white/10 hover:bg-emerald-500/20 rounded-lg text-zinc-400 hover:text-emerald-400 transition-colors"
+                                    >
+                                      <CheckCircle2 size={14} />
+                                    </motion.button>
+                                  </div>
                                 </div>
-                                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                  <motion.button 
-                                    whileHover={{ scale: 1.2, rotate: 8 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    onClick={() => onEdit(task)} 
-                                    className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-zinc-400 hover:text-white transition-colors"
-                                  >
-                                    <Edit size={14} />
-                                  </motion.button>
-                                  <motion.button 
-                                    whileHover={{ scale: 1.2, rotate: -8 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    onClick={() => onUpdateStatus(task._id, "done")} 
-                                    className="p-1.5 bg-white/10 hover:bg-emerald-500/20 rounded-lg text-zinc-400 hover:text-emerald-400 transition-colors"
-                                  >
-                                    <CheckCircle2 size={14} />
-                                  </motion.button>
+                                
+                                <div>
+                                  <h4 className="text-sm font-bold leading-tight text-zinc-100 group-hover:text-indigo-300 transition-colors tracking-tight">{task.title}</h4>
+                                  <div className="flex items-center gap-4 mt-4">
+                                      <p className="text-[10px] font-black text-zinc-500 flex items-center gap-1.5 uppercase tracking-wider">
+                                        <GraduationCap size={12} className="text-indigo-500" />
+                                        {task.workType}
+                                      </p>
+                                      <p className="text-[10px] font-black text-zinc-500 flex items-center gap-1.5 uppercase tracking-wider">
+                                        <Clock size={12} className="text-rose-500" />
+                                        {new Date(task.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                                      </p>
+                                  </div>
                                 </div>
-                              </div>
-                              
-                              <div>
-                                <h4 className="text-sm font-bold leading-tight text-zinc-100 group-hover:text-indigo-300 transition-colors tracking-tight">{task.title}</h4>
-                                <div className="flex items-center gap-4 mt-4">
-                                    <p className="text-[10px] font-black text-zinc-500 flex items-center gap-1.5 uppercase tracking-wider">
-                                      <GraduationCap size={12} className="text-indigo-500" />
-                                      {task.workType}
-                                    </p>
-                                    <p className="text-[10px] font-black text-zinc-500 flex items-center gap-1.5 uppercase tracking-wider">
-                                      <Clock size={12} className="text-rose-500" />
-                                      {new Date(task.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                                    </p>
-                                </div>
-                              </div>
 
-                              <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                                <div className="flex items-center gap-3">
-                                   <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-[10px] font-black text-indigo-400 border border-white/5 overflow-hidden shadow-inner">
-                                      <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(task.assignedTo || 'W')}&background=random`} alt="avatar" />
-                                   </div>
-                                   <span className="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">{task.assignedTo || "Unassigned"}</span>
+                                <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                                  <div className="flex items-center gap-3">
+                                     <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-[10px] font-black text-indigo-400 border border-white/5 overflow-hidden shadow-inner">
+                                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(task.assignedTo || 'W')}&background=random`} alt="avatar" />
+                                     </div>
+                                     <span className="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">{task.assignedTo || "Unassigned"}</span>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="text-[8px] font-black text-zinc-500 uppercase tracking-widest mb-0.5">Budget</p>
+                                    <p className="text-xs font-black text-emerald-400">৳{task.totalValue?.toLocaleString()}</p>
+                                  </div>
                                 </div>
-                                <div className="text-right">
-                                  <p className="text-[8px] font-black text-zinc-500 uppercase tracking-widest mb-0.5">Budget</p>
-                                  <p className="text-xs font-black text-emerald-400">৳{task.totalValue?.toLocaleString()}</p>
-                                </div>
-                              </div>
-                            </motion.div>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                </AnimatePresence>
+                              </motion.div>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                  </AnimatePresence>
+                </div>
                 {provided.placeholder}
               </div>
             )}

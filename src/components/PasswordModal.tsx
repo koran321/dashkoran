@@ -6,7 +6,7 @@ import { Modal } from "./Modal";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, Loader2, ShieldCheck } from "lucide-react";
 import { useTranslation } from "./LanguageProvider";
-import { modalVariants, shakeVariants } from "@/lib/animations";
+import { shakeVariants } from "@/lib/animations";
 
 export function PasswordModal({ 
   isOpen, 
