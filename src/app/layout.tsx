@@ -15,6 +15,11 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Agency OS - Assignment Koran",
   description: "Modern Agency Management System",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" }
+    ]
+  }
 };
 
 export default function RootLayout({

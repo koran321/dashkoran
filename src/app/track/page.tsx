@@ -13,16 +13,19 @@ export default function TrackingPage() {
   const [error, setError] = useState("");
 
   const fetchTask = async (id: string) => {
-    if (!id) return;
+    if (!id.trim()) return;
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`/api/tasks/${id}`);
+      const res = await fetch(`/api/tasks/${id.trim().toUpperCase()}`);
+      if (!res.ok) {
+        throw new Error(res.status === 404 ? "Order not found. Please check your Order ID." : "Server error. Please try again.");
+      }
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setTask(data);
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Something went wrong.");
       setTask(null);
     } finally {
       setLoading(false);
