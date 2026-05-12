@@ -17,7 +17,7 @@ export default function TrackingPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`/api/track/${id.trim().toUpperCase()}`);
+      const res = await fetch(`/api/tasks?orderId=${id.trim().toUpperCase()}`);
       let data: any = {};
       try { data = await res.json(); } catch {}
       if (!res.ok) {
