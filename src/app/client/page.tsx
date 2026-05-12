@@ -168,10 +168,18 @@ export default function ClientPortal() {
           <div className="flex-1 text-center md:text-left space-y-2">
             <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">{profile?.name}</h2>
             <div className="flex flex-wrap justify-center md:justify-start gap-4">
-              <div className="flex items-center gap-1.5 text-zinc-500 text-sm font-medium">
+              <motion.div 
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                  navigator.clipboard.writeText(profile?.phone || "");
+                  showNotification("Phone number copied!", "success");
+                }}
+                className="flex items-center gap-1.5 text-zinc-500 text-sm font-medium cursor-pointer hover:text-indigo-500 transition-colors"
+              >
                 <Phone size={14} className="text-indigo-500" />
                 {profile?.phone}
-              </div>
+              </motion.div>
               <div className="flex items-center gap-1.5 text-zinc-500 text-sm font-medium">
                 <MapPin size={14} className="text-indigo-500" />
                 {profile?.university || "Public University"}
@@ -234,9 +242,12 @@ export default function ClientPortal() {
                 >
                   <div className="flex flex-col sm:flex-row justify-between gap-6">
                     <div className="space-y-4">
-                      <div className="flex items-center gap-3">
-                        <span className="px-2.5 py-1 rounded-xl bg-indigo-500 text-white text-[10px] font-black uppercase tracking-widest">{tk.workType || 'Task'}</span>
-                        <span className="text-xs font-bold text-zinc-400">Order ID: <span className="text-indigo-500 font-black tracking-tighter">#{tk.orderId}</span></span>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <span className="px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-500 text-[9px] font-black uppercase tracking-widest border border-indigo-500/20">{tk.workType || 'Task'}</span>
+                        <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                          <span className="w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+                          Order <span className="text-zinc-900 dark:text-white font-black tracking-tighter">#{tk.orderId}</span>
+                        </div>
                       </div>
                       <h4 className="text-xl font-bold text-zinc-900 dark:text-white">{tk.title}</h4>
                       <div className="flex items-center gap-3">

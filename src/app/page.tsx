@@ -694,9 +694,21 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <h4 className="font-bold text-zinc-900 dark:text-white">{client.name}</h4>
-                      <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-1">
+                      <motion.p 
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => {
+                          if (phoneUnlocked) {
+                            navigator.clipboard.writeText(client.phone || "");
+                            showNotification("Phone number copied!", "success");
+                          } else {
+                            showNotification("Please reveal numbers first", "warning");
+                          }
+                        }}
+                        className={`text-[10px] font-bold mt-1 uppercase tracking-widest cursor-pointer transition-colors ${phoneUnlocked ? 'text-indigo-500 hover:text-indigo-400' : 'text-zinc-500'}`}
+                      >
                         {phoneUnlocked ? (client.phone || "N/A") : (client.phone || "").replace(/(\d{3})\d+(\d{2})/, "$1********$2")}
-                      </p>
+                      </motion.p>
                       <p className="text-[10px] font-medium text-zinc-400 mt-0.5">{client.university || "Public University"}</p>
                     </div>
                     <div className="flex items-center justify-between pt-4 border-t border-zinc-50 dark:border-zinc-800">

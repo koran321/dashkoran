@@ -141,9 +141,8 @@ export const generatePDFInvoice = async (task: TaskPayload, client: ClientPayloa
       1: { halign: 'center' },
       2: { halign: 'right', fontStyle: 'bold' }
     },
-    didParseCell: (data) => {
-      data.cell.styles.borderBottomColor = colorDivider as any;
-      data.cell.styles.borderBottomWidth = 0.5;
+    alternateRowStyles: {
+      fillColor: [248, 250, 252] as any
     }
   });
 
