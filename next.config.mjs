@@ -10,6 +10,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'tukitaki.vercel.app',
       },
+      {
+        protocol: 'https',
+        hostname: 'media.licdn.com',
+      },
     ],
   },
 };

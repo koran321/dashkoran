@@ -6,6 +6,10 @@ import { LanguageProvider } from "@/components/LanguageProvider";
 import { NotificationProvider } from "@/components/NotificationProvider";
 import { CatLoader } from "@/components/CatLoader";
 
+import { SmoothScrollProvider } from "@/lib/lenis";
+
+import { CustomCursor } from "@/components/ui/CustomCursor";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -24,8 +28,11 @@ export default function RootLayout({
         <ThemeProvider>
           <LanguageProvider>
             <NotificationProvider>
-              <CatLoader />
-              {children}
+              <SmoothScrollProvider>
+                <CatLoader />
+                <CustomCursor />
+                {children}
+              </SmoothScrollProvider>
             </NotificationProvider>
           </LanguageProvider>
         </ThemeProvider>

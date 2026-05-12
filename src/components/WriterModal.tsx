@@ -22,6 +22,7 @@ export function WriterModal({
     email: "",
     writerId: "",
     image: "",
+    imageLink: "",
     dob: "",
     nid: ""
   });
@@ -29,13 +30,15 @@ export function WriterModal({
   useEffect(() => {
     if (writer) {
       setFormData(writer);
-    } else {
+    } else if (isOpen) {
+      const newId = `WRT-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(100 + Math.random() * 900)}`;
       setFormData({
         name: "",
         phone: "",
         email: "",
-        writerId: "",
+        writerId: newId,
         image: "",
+        imageLink: "",
         dob: "",
         nid: ""
       });
@@ -99,8 +102,8 @@ export function WriterModal({
           <input 
             type="url" 
             className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 outline-none"
-            value={formData.image}
-            onChange={(e) => setFormData({...formData, image: e.target.value})}
+            value={formData.image || formData.imageLink}
+            onChange={(e) => setFormData({...formData, imageLink: e.target.value, image: e.target.value})}
             placeholder="https://..."
           />
         </div>

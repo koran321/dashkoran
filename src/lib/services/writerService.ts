@@ -7,6 +7,7 @@ export interface Writer {
   phone: string;
   email?: string;
   image?: string;
+  imageLink?: string;
   dob?: string;
   nid?: string;
   createdAt: Date;

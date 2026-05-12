@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+
 import { Modal } from "./Modal";
-import { Lock, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Lock, Loader2, ShieldCheck } from "lucide-react";
 import { useTranslation } from "./LanguageProvider";
+import { modalVariants, shakeVariants } from "@/lib/animations";
 
 export function PasswordModal({ 
   isOpen, 
@@ -14,7 +17,7 @@ export function PasswordModal({
 }: { 
   isOpen: boolean; 
   onClose: () => void; 
-  onVerify: () => void;
+  onVerify: () => void; 
   message: string;
   requiredPassword: string;
 }) {
@@ -22,18 +25,22 @@ export function PasswordModal({
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
-    // Artificial delay for premium feel
     setTimeout(() => {
       if (password === requiredPassword) {
-        setPassword("");
-        setError(false);
-        onVerify();
-        onClose();
+        setSuccess(true);
+        setTimeout(() => {
+          setPassword("");
+          setError(false);
+          setSuccess(false);
+          onVerify();
+          onClose();
+        }, 800);
       } else {
         setError(true);
       }
@@ -43,36 +50,57 @@ export function PasswordModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={t('modal_auth_title')}>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="text-center space-y-2">
-          <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto text-zinc-500 dark:text-zinc-400">
-            <Lock size={24} />
-          </div>
-          <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest px-4">{message}</p>
+      <motion.form 
+        onSubmit={handleSubmit} 
+        animate={error ? "shake" : ""}
+        variants={shakeVariants}
+        className="space-y-6"
+      >
+        <div className="text-center space-y-4">
+          <motion.div 
+            animate={success ? { scale: [1, 1.2, 1], backgroundColor: ["rgba(255,255,255,0.05)", "#10b981", "#10b981"] } : {}}
+            className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mx-auto text-zinc-400 border border-white/10"
+          >
+            {success ? <ShieldCheck size={32} className="text-white" /> : <Lock size={32} />}
+          </motion.div>
+          <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[4px] px-4 leading-relaxed">{message}</p>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-3">
           <input 
             type="password" 
             placeholder="••••••••"
-            className={`w-full px-4 py-4 rounded-2xl border ${error ? 'border-rose-500 bg-rose-500/5' : 'border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950'} focus:ring-2 focus:ring-indigo-500 outline-none text-center text-xl tracking-[10px] transition-all`}
+            className={`w-full px-4 py-5 rounded-3xl border-2 ${error ? 'border-rose-500 bg-rose-500/10' : 'border-white/10 bg-white/5 focus:border-indigo-500'} outline-none text-center text-2xl tracking-[12px] transition-all text-white font-clash`}
             value={password}
             onChange={(e) => { setPassword(e.target.value); setError(false); }}
             autoFocus
             required
           />
-          {error && (
-            <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest text-center">Incorrect Password. Try Again.</p>
-          )}
+          <AnimatePresence>
+            {error && (
+              <motion.p 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="text-[10px] font-black text-rose-500 uppercase tracking-[3px] text-center"
+              >
+                Access Denied. Try Again.
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
 
-        <button 
-          disabled={loading}
-          className="w-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 py-4 rounded-2xl font-black uppercase tracking-[4px] hover:opacity-90 transition-all shadow-xl shadow-zinc-500/10 flex items-center justify-center gap-3"
+        <motion.button 
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          disabled={loading || success}
+          className={`w-full py-5 rounded-3xl font-black uppercase tracking-[6px] transition-all flex items-center justify-center gap-3 shadow-2xl ${
+            success ? 'bg-emerald-500 text-white' : 'bg-white text-zinc-950 hover:bg-zinc-200'
+          }`}
         >
-          {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Verify & Continue"}
-        </button>
-      </form>
+          {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : success ? "Authorized" : "Verify Access"}
+        </motion.button>
+      </motion.form>
     </Modal>
   );
 }

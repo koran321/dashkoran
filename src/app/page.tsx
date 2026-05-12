@@ -39,6 +39,9 @@ import { KanbanBoard } from "@/components/KanbanBoard";
 import { CustomDropdown } from "@/components/CustomDropdown";
 import { PasswordModal } from "@/components/PasswordModal";
 import { generatePDFInvoice } from "@/lib/invoice";
+import { containerVariants, itemVariants, tabVariants, textSwapVariants } from "@/lib/animations";
+import { MagneticButton } from "@/components/ui/MagneticButton";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 
 export default function Dashboard() {
   const { theme, toggleTheme } = useTheme();
@@ -141,48 +144,92 @@ export default function Dashboard() {
   }
 
   async function handleSaveClient(data: any) {
-    const url = data._id ? `/api/clients/${data._id}` : "/api/clients";
-    const method = data._id ? "PUT" : "POST";
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
-    if (res.ok) {
-      setModals({...modals, client: false});
-      fetchData();
-      showNotification(data._id ? "Client updated!" : "Client added!");
+    const action = async () => {
+        const url = data._id ? `/api/clients/${data._id}` : "/api/clients";
+        const method = data._id ? "PUT" : "POST";
+        const res = await fetch(url, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        if (res.ok) {
+          setModals({...modals, client: false});
+          fetchData();
+          showNotification(data._id ? "Client updated!" : "Client added!");
+        }
+    };
+
+    if (data._id) {
+        setPendingAction({
+            fn: action,
+            message: t('msg_auth_save'),
+            requiredPassword: "1is2"
+        });
+    } else {
+        action();
     }
   }
 
   async function handleSaveExpense(data: any) {
-    const url = data._id ? `/api/accounts/${data._id}` : "/api/accounts";
-    const method = data._id ? "PUT" : "POST";
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+    setPendingAction({
+        fn: async () => {
+            const url = data._id ? `/api/accounts/${data._id}` : "/api/accounts";
+            const method = data._id ? "PUT" : "POST";
+            const res = await fetch(url, {
+              method,
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data)
+            });
+            if (res.ok) {
+              setModals({...modals, expense: false});
+              fetchData();
+              showNotification(data._id ? "Expense updated!" : "Funds deducted!");
+            }
+        },
+        message: t('msg_auth_save'),
+        requiredPassword: "1is2"
     });
-    if (res.ok) {
-      setModals({...modals, expense: false});
-      fetchData();
-      showNotification(data._id ? "Expense updated!" : "Funds deducted!");
-    }
   }
 
   async function handleSaveWriter(data: any) {
-    const url = data._id ? `/api/writers/${data._id}` : "/api/writers";
-    const method = data._id ? "PUT" : "POST";
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
-    if (res.ok) {
-      setModals({...modals, writer: false});
-      fetchData();
-      showNotification(data._id ? "Writer profile updated!" : "Writer added successfully!");
+    const action = async () => {
+        const url = data._id ? `/api/writers/${data._id}` : "/api/writers";
+        const method = data._id ? "PUT" : "POST";
+        const res = await fetch(url, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        if (res.ok) {
+          setModals({...modals, writer: false});
+          fetchData();
+          showNotification(data._id ? "Writer profile updated!" : "Writer added successfully!");
+        }
+    };
+
+    if (data._id) {
+        setPendingAction({
+            fn: action,
+            message: t('msg_auth_save'),
+            requiredPassword: "1is2"
+        });
+    } else {
+        action();
     }
+  }
+
+  async function handleDeleteWriter(id: string) {
+    setPendingAction({
+        fn: async () => {
+            const res = await fetch(`/api/writers/${id}`, { method: "DELETE" });
+            if (res.ok) {
+                fetchData();
+                showNotification("Writer removed successfully!", "warning");
+            }
+        },
+        message: t('msg_auth_del'),
+        requiredPassword: "1is2"
+    });
   }
 
   async function handleDeleteTask(id: string) {
@@ -233,7 +280,7 @@ export default function Dashboard() {
             }
         },
         message: t('msg_auth_del'),
-        requiredPassword: "del1"
+        requiredPassword: "1is2"
     });
   }
 
@@ -262,7 +309,7 @@ export default function Dashboard() {
             showNotification("Phone numbers revealed", "info");
         },
         message: t('msg_auth_phone'),
-        requiredPassword: "cl11"
+        requiredPassword: "1is2"
     });
   };
 
@@ -274,7 +321,7 @@ export default function Dashboard() {
             showNotification("Generating Invoice PDF...", "info");
         },
         message: t('msg_auth_inv'),
-        requiredPassword: "inv11"
+        requiredPassword: "1is2"
     });
   };
 
@@ -287,18 +334,7 @@ export default function Dashboard() {
     return matchesSearch && matchesType && matchesAssignee;
   });
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { staggerChildren: 0.05 }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1 }
-  };
+  // --- RENDER ---
 
   return (
     <div className="min-h-screen max-w-7xl mx-auto p-4 sm:p-8">
@@ -334,15 +370,36 @@ export default function Dashboard() {
             </div>
             <button 
               onClick={toggleLang}
-              className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider border rounded-full border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors shadow-sm text-indigo-600 dark:text-indigo-400"
+              className="px-4 py-2 text-xs font-black uppercase tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 rounded-2xl transition-all shadow-2xl text-indigo-400 backdrop-blur-md"
             >
-              {lang === "en" ? "বাং" : "EN"}
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={lang}
+                  variants={textSwapVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="inline-block"
+                >
+                  {lang === "en" ? "বাং" : "EN"}
+                </motion.span>
+              </AnimatePresence>
             </button>
             <button 
               onClick={toggleTheme}
-              className="p-2 border rounded-full border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors shadow-sm text-zinc-600 dark:text-zinc-400"
+              className="p-2.5 border border-white/10 bg-white/5 hover:bg-white/10 rounded-2xl transition-all shadow-2xl text-zinc-400 backdrop-blur-md"
             >
-              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={theme}
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+                </motion.div>
+              </AnimatePresence>
             </button>
           </div>
         </div>
@@ -385,32 +442,34 @@ export default function Dashboard() {
       <AnimatePresence mode="wait">
         <motion.main
           key={activeTab}
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          exit={{ opacity: 0, y: 10 }}
+          variants={tabVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
           className="space-y-6"
         >
           {activeTab === "dashboard" && (
-            <>
+            <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-6">
               {/* Stats Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                  { label: t('stat_earned'), value: stats ? `৳${stats.totalEarned.toLocaleString()}` : "৳0", color: "text-emerald-600 dark:text-emerald-400" },
-                  { label: t('stat_expected'), value: stats ? `৳${stats.expectedEarnings.toLocaleString()}` : "৳0", color: "text-yellow-600 dark:text-yellow-400" },
-                  { label: t('stat_expenses'), value: stats ? `৳${stats.totalExpenses.toLocaleString()}` : "৳0", color: "text-rose-600 dark:text-rose-400" },
-                  { label: t('stat_net'), value: stats ? `৳${stats.netBalance.toLocaleString()}` : "৳0", color: "text-zinc-900 dark:text-white" },
+                  { label: t('stat_earned'), value: stats?.totalEarned || 0, color: "text-emerald-600 dark:text-emerald-400", prefix: "৳" },
+                  { label: t('stat_expected'), value: stats?.expectedEarnings || 0, color: "text-yellow-600 dark:text-yellow-400", prefix: "৳" },
+                  { label: t('stat_expenses'), value: stats?.totalExpenses || 0, color: "text-rose-600 dark:text-rose-400", prefix: "৳" },
+                  { label: t('stat_net'), value: stats?.netBalance || 0, color: "text-zinc-900 dark:text-white", prefix: "৳" },
                 ].map((stat, i) => (
                   <motion.div 
                     key={i}
                     variants={itemVariants}
-                    className="glass p-5 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-xl shadow-zinc-500/5"
+                    className="glass-card p-6 border border-white/10 shadow-2xl transition-all hover:scale-[1.02]"
                   >
-                    <p className="text-zinc-500 dark:text-zinc-400 text-[10px] uppercase tracking-[2px] font-black mb-1">{stat.label}</p>
+                    <p className="text-zinc-500 dark:text-zinc-400 text-[10px] uppercase tracking-[3px] font-black mb-2">{stat.label}</p>
                     {loading ? (
-                      <div className="h-8 w-24 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded" />
+                      <div className="h-8 w-24 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded-lg" />
                     ) : (
-                      <h3 className={`text-2xl font-black ${stat.color}`}>{stat.value}</h3>
+                      <h3 className={`text-3xl font-black ${stat.color} tracking-tight`}>
+                        {stat.prefix}<AnimatedNumber value={stat.value} />
+                      </h3>
                     )}
                   </motion.div>
                 ))}
@@ -458,7 +517,7 @@ export default function Dashboard() {
                   </button>
                 </motion.div>
               </div>
-            </>
+            </motion.div>
           )}
 
           {activeTab === "tasks" && (
@@ -573,8 +632,14 @@ export default function Dashboard() {
                       <p className="text-[10px] font-medium text-zinc-400 mt-0.5">{client.university || "Public University"}</p>
                     </div>
                     <div className="flex items-center justify-between pt-4 border-t border-zinc-50 dark:border-zinc-800">
-                        <span className="text-[9px] font-black text-zinc-400 uppercase">Total Spent</span>
-                        <span className="text-sm font-black text-indigo-500">৳{client.totalSpent?.toLocaleString() || 0}</span>
+                        <div className="flex flex-col">
+                            <span className="text-[9px] font-black text-zinc-400 uppercase">Country</span>
+                            <span className="text-[10px] font-bold text-zinc-600 dark:text-zinc-300">{client.country || "N/A"}</span>
+                        </div>
+                        <div className="flex flex-col items-end">
+                            <span className="text-[9px] font-black text-zinc-400 uppercase text-right">Total Spent</span>
+                            <span className="text-sm font-black text-indigo-500">৳{client.totalSpent?.toLocaleString() || 0}</span>
+                        </div>
                     </div>
                   </motion.div>
                 ))}
@@ -583,27 +648,35 @@ export default function Dashboard() {
           )}
 
           {activeTab === "writers" && (
-            <div className="space-y-6">
+            <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-6">
                <div className="flex justify-between items-center">
                  <h2 className="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-[4px]">{t('nav_writers')}</h2>
-                 <button onClick={() => { setEditingItem(null); setModals({...modals, writer: true}); }} className="px-6 py-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2">
-                    {t('btn_new_writer')}
-                 </button>
+                 <MagneticButton 
+                   onClick={() => { setEditingItem(null); setModals({...modals, writer: true}); }} 
+                   className="px-6 py-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2 shadow-xl"
+                 >
+                    <Plus size={14} /> {t('btn_new_writer')}
+                 </MagneticButton>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {writerStats.map((writer) => (
-                  <WriterCard 
-                    key={writer._id} 
-                    writer={writer} 
-                    onEdit={(w) => { 
-                      const fullWriter = writers.find(wr => wr.name === w._id || wr._id === w._id);
-                      setEditingItem(fullWriter || w); 
-                      setModals({...modals, writer: true}); 
-                    }}
-                  />
-                ))}
+                {writers.map((writer) => {
+                  const wStat = writerStats.find(s => s._id === writer.name || s._id === writer._id);
+                  return (
+                    <motion.div key={writer._id} variants={itemVariants}>
+                      <WriterCard 
+                        writer={writer} 
+                        stats={wStat}
+                        onEdit={(w) => { 
+                          setEditingItem(w); 
+                          setModals({...modals, writer: true}); 
+                        }}
+                        onDelete={handleDeleteWriter}
+                      />
+                    </motion.div>
+                  );
+                })}
               </div>
-            </div>
+            </motion.div>
           )}
 
           {activeTab === "expenses" && (
