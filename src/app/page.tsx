@@ -208,7 +208,7 @@ export default function Dashboard() {
         });
         if (res.ok) {
             fetchData();
-            showNotification(`Status updated to ${status.replace('_', ' ')}`);
+            showNotification(`Status updated to ${(status || '').replace('_', ' ')}`);
         }
     };
 
@@ -221,6 +221,20 @@ export default function Dashboard() {
     } else {
         action();
     }
+  }
+
+  async function handleDeleteClient(id: string) {
+    setPendingAction({
+        fn: async () => {
+            const res = await fetch(`/api/clients/${id}`, { method: "DELETE" });
+            if (res.ok) {
+                fetchData();
+                showNotification("Client removed successfully!", "info");
+            }
+        },
+        message: t('msg_auth_del'),
+        requiredPassword: "del1"
+    });
   }
 
   async function handleDeleteExpense(id: string) {
@@ -255,8 +269,8 @@ export default function Dashboard() {
   const handleInvoiceDownload = (task: any) => {
     const client = clients.find(c => c._id === task.clientId);
     setPendingAction({
-        fn: () => {
-            generatePDFInvoice(task, client);
+        fn: async () => {
+            await generatePDFInvoice(task, client);
             showNotification("Generating Invoice PDF...", "info");
         },
         message: t('msg_auth_inv'),
@@ -546,7 +560,7 @@ export default function Dashboard() {
                   >
                     <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button onClick={() => { setEditingItem(client); setModals({...modals, client: true}); }} className="p-1.5 bg-white dark:bg-zinc-800 rounded-lg shadow-md hover:text-indigo-500"><Edit size={14} /></button>
-                        <button className="p-1.5 bg-white dark:bg-zinc-800 rounded-lg shadow-md hover:text-rose-500"><Trash2 size={14} /></button>
+                        <button onClick={() => handleDeleteClient(client._id)} className="p-1.5 bg-white dark:bg-zinc-800 rounded-lg shadow-md hover:text-rose-500"><Trash2 size={14} /></button>
                     </div>
                     <div className="w-16 h-16 rounded-2xl bg-indigo-500 flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-indigo-500/20">
                       {client.name.charAt(0)}
@@ -554,7 +568,7 @@ export default function Dashboard() {
                     <div>
                       <h4 className="font-bold text-zinc-900 dark:text-white">{client.name}</h4>
                       <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-1">
-                        {phoneUnlocked ? client.phone : client.phone.replace(/(\d{3})\d+(\d{2})/, "$1********$2")}
+                        {phoneUnlocked ? (client.phone || "N/A") : (client.phone || "").replace(/(\d{3})\d+(\d{2})/, "$1********$2")}
                       </p>
                       <p className="text-[10px] font-medium text-zinc-400 mt-0.5">{client.university || "Public University"}</p>
                     </div>
@@ -581,7 +595,11 @@ export default function Dashboard() {
                   <WriterCard 
                     key={writer._id} 
                     writer={writer} 
-                    onEdit={(w) => { setEditingItem(w); setModals({...modals, writer: true}); }}
+                    onEdit={(w) => { 
+                      const fullWriter = writers.find(wr => wr.name === w._id || wr._id === w._id);
+                      setEditingItem(fullWriter || w); 
+                      setModals({...modals, writer: true}); 
+                    }}
                   />
                 ))}
               </div>
@@ -617,7 +635,7 @@ export default function Dashboard() {
                             </span>
                         </td>
                         <td className="px-6 py-4 text-zinc-900 dark:text-zinc-200">{exp.description}</td>
-                        <td className="px-6 py-4 font-black text-rose-500">৳{exp.amount.toLocaleString()}</td>
+                        <td className="px-6 py-4 font-black text-rose-500">৳{(exp.amount || 0).toLocaleString()}</td>
                         <td className="px-6 py-4">
                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                               <button onClick={() => { setEditingItem(exp); setModals({...modals, expense: true}); }} className="p-2 text-zinc-400 hover:text-indigo-500"><Edit size={16} /></button>

@@ -1,7 +1,7 @@
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-
-export const generatePDFInvoice = (task: any, client: any) => {
+export const generatePDFInvoice = async (task: any, client: any) => {
+  const jsPDF = (await import("jspdf")).default;
+  const autoTable = (await import("jspdf-autotable")).default;
+  
   const doc = new jsPDF({ format: "a4" });
   
   const total = task.totalValue || 0;

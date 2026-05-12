@@ -88,7 +88,8 @@ export const translations = {
     msg_auth_del_exp: "Enter password to delete expense.",
     msg_auth_save: "Enter password to save changes.",
     msg_auth_phone: "Enter password to reveal phone numbers.",
-    msg_auth_inv: "Enter password to download invoice."
+    msg_auth_inv: "Enter password to download invoice.",
+    msg_auth_del: "Enter password to delete this item."
   },
   bn: {
     title: "এজেন্সি ওএস",
@@ -179,7 +180,8 @@ export const translations = {
     msg_auth_del_exp: "খরচ ডিলিট করতে পাসওয়ার্ড দিন।",
     msg_auth_save: "সেভ করতে পাসওয়ার্ড দিন।",
     msg_auth_phone: "ফোন নম্বর দেখতে পাসওয়ার্ড দিন।",
-    msg_auth_inv: "ইনভয়েস ডাউনলোড করতে পাসওয়ার্ড দিন।"
+    msg_auth_inv: "ইনভয়েস ডাউনলোড করতে পাসওয়ার্ড দিন।",
+    msg_auth_del: "এটি ডিলিট করতে পাসওয়ার্ড দিন।"
   }
 };
 

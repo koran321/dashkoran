@@ -2,8 +2,10 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import Lottie from "lottie-react";
+import dynamic from "next/dynamic";
 import { useTranslation } from "./LanguageProvider";
+
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 export function CatLoader() {
   const [show, setShow] = useState(true);

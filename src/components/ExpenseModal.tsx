@@ -94,6 +94,17 @@ export function ExpenseModal({
           />
         </div>
 
+        <div className="space-y-1">
+          <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{t('lbl_deadline')}</label>
+          <input 
+            type="date" 
+            className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 outline-none"
+            value={formData.date}
+            onChange={(e) => setFormData({...formData, date: e.target.value})}
+            required
+          />
+        </div>
+
         <div className="pt-4">
           <button 
             type="submit" 

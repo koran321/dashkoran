@@ -96,13 +96,15 @@ export function TaskModal({
           </div>
           <div className="space-y-1">
             <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{t('lbl_deadline')}</label>
-            <input 
-              type="date" 
-              className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 outline-none"
-              value={formData.deadline}
-              onChange={(e) => setFormData({...formData, deadline: e.target.value})}
-              required
-            />
+            <div className="relative">
+              <input 
+                type="date" 
+                className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 outline-none color-scheme-light dark:color-scheme-dark"
+                value={formData.deadline}
+                onChange={(e) => setFormData({...formData, deadline: e.target.value})}
+                required
+              />
+            </div>
           </div>
         </div>
 
