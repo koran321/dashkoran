@@ -163,8 +163,8 @@ export default function Dashboard() {
 
   // --- ACTIONS ---
   async function handleSaveTask(data: any) {
-    const action = () => {
-        const execute = async () => {
+    setPendingAction({
+        fn: async () => {
             const url = data._id ? `/api/tasks/${data._id}` : "/api/tasks";
             const method = data._id ? "PUT" : "POST";
             const res = await fetch(url, {
@@ -177,46 +177,31 @@ export default function Dashboard() {
               fetchData();
               showNotification(data._id ? "Task updated!" : "Task deployed successfully!");
             }
-        };
-        execute();
-    };
-
-    if (data._id) {
-        setPendingAction({
-            fn: action,
-            message: t('msg_auth_save'),
-            requiredPassword: "1is2"
-        });
-    } else {
-        action();
-    }
+        },
+        message: t('msg_auth_save'),
+        requiredPassword: "1is2"
+    });
   }
 
   async function handleSaveClient(data: any) {
-    const action = async () => {
-        const url = data._id ? `/api/clients/${data._id}` : "/api/clients";
-        const method = data._id ? "PUT" : "POST";
-        const res = await fetch(url, {
-          method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-        if (res.ok) {
-          setModals({...modals, client: false});
-          fetchData();
-          showNotification(data._id ? "Client updated!" : "Client added!");
-        }
-    };
-
-    if (data._id) {
-        setPendingAction({
-            fn: action,
-            message: t('msg_auth_save'),
-            requiredPassword: "1is2"
-        });
-    } else {
-        action();
-    }
+    setPendingAction({
+        fn: async () => {
+            const url = data._id ? `/api/clients/${data._id}` : "/api/clients";
+            const method = data._id ? "PUT" : "POST";
+            const res = await fetch(url, {
+              method,
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data)
+            });
+            if (res.ok) {
+              setModals({...modals, client: false});
+              fetchData();
+              showNotification(data._id ? "Client updated!" : "Client added!");
+            }
+        },
+        message: t('msg_auth_save'),
+        requiredPassword: "1is2"
+    });
   }
 
   async function handleSaveExpense(data: any) {
@@ -241,30 +226,24 @@ export default function Dashboard() {
   }
 
   async function handleSaveWriter(data: any) {
-    const action = async () => {
-        const url = data._id ? `/api/writers/${data._id}` : "/api/writers";
-        const method = data._id ? "PUT" : "POST";
-        const res = await fetch(url, {
-          method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-        if (res.ok) {
-          setModals({...modals, writer: false});
-          fetchData();
-          showNotification(data._id ? "Writer profile updated!" : "Writer added successfully!");
-        }
-    };
-
-    if (data._id) {
-        setPendingAction({
-            fn: action,
-            message: t('msg_auth_save'),
-            requiredPassword: "1is2"
-        });
-    } else {
-        action();
-    }
+    setPendingAction({
+        fn: async () => {
+            const url = data._id ? `/api/writers/${data._id}` : "/api/writers";
+            const method = data._id ? "PUT" : "POST";
+            const res = await fetch(url, {
+              method,
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data)
+            });
+            if (res.ok) {
+              setModals({...modals, writer: false});
+              fetchData();
+              showNotification(data._id ? "Writer profile updated!" : "Writer added successfully!");
+            }
+        },
+        message: t('msg_auth_save'),
+        requiredPassword: "1is2"
+    });
   }
 
   async function handleDeleteWriter(id: string) {
@@ -308,15 +287,11 @@ export default function Dashboard() {
         }
     };
 
-    if (status === 'done') {
-        setPendingAction({
-            fn: action,
-            message: t('msg_auth_status'),
-            requiredPassword: "1is2"
-        });
-    } else {
-        action();
-    }
+    setPendingAction({
+        fn: action,
+        message: t('msg_auth_status'),
+        requiredPassword: "1is2"
+    });
   }
 
   async function handleDeleteClient(id: string) {
