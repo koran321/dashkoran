@@ -15,6 +15,12 @@ export async function POST(req: Request) {
     }
 
     const db = await getDb("ak_process");
+    
+    // Cleanup expired sessions
+    await db.collection("sessions").deleteMany({ 
+      expiresAt: { $lt: new Date() } 
+    });
+
     const expiry = new Date();
     expiry.setMonth(expiry.getMonth() + 1); // 1 month from now
 

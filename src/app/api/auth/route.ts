@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getDb } from "@/lib/mongodb";
 
 export async function POST(request: Request) {
   try {
@@ -8,6 +9,12 @@ export async function POST(request: Request) {
     const isValid = await SecurityService.verifyPassword(password, "CRUD main password");
 
     if (isValid) {
+      const db = await getDb("ak_process");
+      // Cleanup expired sessions
+      await db.collection("sessions").deleteMany({ 
+        expiresAt: { $lt: new Date() } 
+      });
+
       const response = NextResponse.json({ success: true });
       // Set a session cookie
       response.cookies.set("session", "authenticated", {
