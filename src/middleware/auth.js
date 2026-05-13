@@ -23,10 +23,6 @@ export async function checkPassword(req, res, next) {
     const { password } = req.body;
     if (!password) return res.status(401).json({ error: "Password required" });
 
-    if (password === "none_req_for_dnd") {
-      return next();
-    }
-
     const db = await getDb();
     const admin = await db.collection("security").findOne({ password });
     if (!admin) return res.status(401).json({ error: "Invalid password" });
