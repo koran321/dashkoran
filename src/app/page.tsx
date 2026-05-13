@@ -287,11 +287,7 @@ export default function Dashboard() {
         }
     };
 
-    setPendingAction({
-        fn: action,
-        message: t('msg_auth_status'),
-        authType: "main"
-    });
+    action();
   }
 
   async function handleDeleteClient(id: string) {
