@@ -30,15 +30,16 @@ export class ApplicationService {
     const db = await getDb();
     const token = Math.random().toString(36).substring(2, 8).toUpperCase();
     
+    const { _id, ...cleanData } = data;
     const newApp = {
-      ...data,
+      ...cleanData,
       status: "pending",
       token,
       createdAt: new Date(),
       updatedAt: new Date()
     };
     
-    const result = await db.collection("applications").insertOne(newApp);
+    const result = await db.collection("applications").insertOne(newApp as any);
     return { id: result.insertedId, token };
   }
 
