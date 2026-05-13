@@ -17,7 +17,38 @@ export interface Client {
 export class ClientService {
   static async getAll() {
     const db = await getDb();
-    const clients = await db.collection("clients").find().sort({ createdAt: -1 }).toArray();
+    const clients = await db.collection("clients").aggregate([
+      { $sort: { createdAt: -1 } },
+      {
+        $lookup: {
+          from: "assignment",
+          let: { clientId: { $toString: "$_id" } },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: [{ $toString: "$client" }, "$$clientId"] }
+              }
+            },
+            {
+              $group: {
+                _id: null,
+                totalSpent: {
+                  $sum: { $add: [{ $ifNull: ["$totalValue", 0] }, { $ifNull: ["$bonus", 0] }] }
+                }
+              }
+            }
+          ],
+          as: "spendData"
+        }
+      },
+      {
+        $addFields: {
+          totalSpent: { $ifNull: [{ $arrayElemAt: ["$spendData.totalSpent", 0] }, 0] }
+        }
+      },
+      { $project: { spendData: 0 } }
+    ]).toArray();
+
     return clients.map(c => ({ ...c, _id: c._id.toString() }));
   }
 

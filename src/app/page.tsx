@@ -749,7 +749,7 @@ export default function Dashboard() {
                    onClick={() => { setEditingItem(null); setModals({...modals, writer: true}); }} 
                    className="px-6 py-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2 shadow-xl"
                  >
-                    <Plus size={14} /> {t('btn_new_writer')}
+                     {t('btn_new_writer')}
                  </MagneticButton>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
