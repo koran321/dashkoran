@@ -6,8 +6,11 @@ export async function POST(req: Request) {
   try {
     const { password } = await req.json();
     
-    // Public entry password check
-    if (password !== "ss11") {
+    // Verify password against DB
+    const { SecurityService } = await import("@/lib/services/securityService");
+    const isValid = await SecurityService.verifyPassword(password, "public entry password");
+    
+    if (!isValid) {
       return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }
 

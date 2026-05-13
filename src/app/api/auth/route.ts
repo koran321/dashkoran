@@ -4,8 +4,10 @@ export async function POST(request: Request) {
   try {
     const { password } = await request.json();
     
-    // Simple password check for now (as per existing logic)
-    if (password === "shihab123") {
+    const { SecurityService } = await import("@/lib/services/securityService");
+    const isValid = await SecurityService.verifyPassword(password, "CRUD main password");
+
+    if (isValid) {
       const response = NextResponse.json({ success: true });
       // Set a session cookie
       response.cookies.set("session", "authenticated", {

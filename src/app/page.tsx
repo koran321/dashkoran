@@ -80,7 +80,7 @@ export default function Dashboard() {
   const [pendingAction, setPendingAction] = useState<{
     fn: () => Promise<void> | void;
     message: string;
-    requiredPassword: string;
+    authType: "main" | "reveal" | "invoice" | "public";
   } | null>(null);
 
   useEffect(() => {
@@ -179,7 +179,7 @@ export default function Dashboard() {
             }
         },
         message: t('msg_auth_save'),
-        requiredPassword: "1is2"
+        authType: "main"
     });
   }
 
@@ -200,7 +200,7 @@ export default function Dashboard() {
             }
         },
         message: t('msg_auth_save'),
-        requiredPassword: "1is2"
+        authType: "main"
     });
   }
 
@@ -221,7 +221,7 @@ export default function Dashboard() {
             }
         },
         message: t('msg_auth_save'),
-        requiredPassword: "1is2"
+        authType: "main"
     });
   }
 
@@ -242,7 +242,7 @@ export default function Dashboard() {
             }
         },
         message: t('msg_auth_save'),
-        requiredPassword: "1is2"
+        authType: "main"
     });
   }
 
@@ -256,7 +256,7 @@ export default function Dashboard() {
             }
         },
         message: t('msg_auth_del'),
-        requiredPassword: "1is2"
+        authType: "main"
     });
   }
 
@@ -270,7 +270,7 @@ export default function Dashboard() {
             }
         },
         message: t('msg_auth_del_task'),
-        requiredPassword: "1is2"
+        authType: "main"
     });
   }
 
@@ -290,7 +290,7 @@ export default function Dashboard() {
     setPendingAction({
         fn: action,
         message: t('msg_auth_status'),
-        requiredPassword: "1is2"
+        authType: "main"
     });
   }
 
@@ -304,7 +304,7 @@ export default function Dashboard() {
             }
         },
         message: t('msg_auth_del'),
-        requiredPassword: "1is2"
+        authType: "main"
     });
   }
 
@@ -318,7 +318,7 @@ export default function Dashboard() {
             }
         },
         message: t('msg_auth_del_exp'),
-        requiredPassword: "1is2"
+        authType: "main"
     });
   }
 
@@ -333,7 +333,7 @@ export default function Dashboard() {
             showNotification("Phone numbers revealed", "info");
         },
         message: t('msg_auth_phone'),
-        requiredPassword: "1is2"
+        authType: "reveal"
     });
   };
 
@@ -345,7 +345,7 @@ export default function Dashboard() {
             showNotification("Generating Invoice PDF...", "info");
         },
         message: t('msg_auth_inv'),
-        requiredPassword: "1is2"
+        authType: "invoice"
     });
   };
 
@@ -371,7 +371,7 @@ export default function Dashboard() {
             onClose={() => {}} 
             onVerify={() => {}}
             message="Agency OS: Public Entry Required"
-            requiredPassword="ss11"
+            requiredPassword=""
             customVerify={handlePublicLogin}
           />
         </div>
@@ -849,13 +849,20 @@ export default function Dashboard() {
         tasks={tasks}
       />
       
-      {/* Password Security Modal */}
       <PasswordModal 
         isOpen={!!pendingAction}
         onClose={() => setPendingAction(null)}
         onVerify={async () => { await pendingAction?.fn(); setPendingAction(null); }}
+        customVerify={async (password) => {
+          const res = await fetch("/api/security/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password, type: pendingAction?.authType })
+          });
+          if (!res.ok) throw new Error("Invalid password");
+        }}
         message={pendingAction?.message || ""}
-        requiredPassword={pendingAction?.requiredPassword || ""}
+        requiredPassword=""
       />
 
       {/* Bottom Padding for Mobile */}
