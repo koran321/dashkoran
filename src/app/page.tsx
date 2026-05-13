@@ -24,7 +24,8 @@ import {
   GraduationCap,
   ChevronRight,
   Eye,
-  EyeOff
+  EyeOff,
+  ClipboardList
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { useTranslation } from "@/components/LanguageProvider";
@@ -43,7 +44,6 @@ import { containerVariants, itemVariants, tabVariants, textSwapVariants } from "
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { ApplicationsList } from "@/components/ApplicationsList";
-import { ClipboardList } from "lucide-react";
 
 export default function Dashboard() {
   const { theme, toggleTheme } = useTheme();
