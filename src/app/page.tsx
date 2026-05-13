@@ -78,7 +78,7 @@ export default function Dashboard() {
   
   // Security Modal State
   const [pendingAction, setPendingAction] = useState<{
-    fn: () => void;
+    fn: () => Promise<void> | void;
     message: string;
     requiredPassword: string;
   } | null>(null);
@@ -878,7 +878,7 @@ export default function Dashboard() {
       <PasswordModal 
         isOpen={!!pendingAction}
         onClose={() => setPendingAction(null)}
-        onVerify={() => pendingAction?.fn()}
+        onVerify={async () => { await pendingAction?.fn(); setPendingAction(null); }}
         message={pendingAction?.message || ""}
         requiredPassword={pendingAction?.requiredPassword || ""}
       />
