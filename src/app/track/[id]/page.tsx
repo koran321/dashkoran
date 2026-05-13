@@ -49,7 +49,7 @@ export default function TrackingPage() {
 
   const steps = [
     { id: "pending", label: t("lbl_pending"), status: "pending", color: "bg-amber-500", glow: "shadow-amber-500/50" },
-    { id: "in_progress", label: t("lbl_working"), status: "in_progress", color: "bg-blue-500", glow: "shadow-blue-500/50" },
+    { id: "in_progress", label: t("lbl_in_progress"), status: "in_progress", color: "bg-blue-500", glow: "shadow-blue-500/50" },
     { id: "review", label: t("lbl_review"), status: "review", color: "bg-purple-500", glow: "shadow-purple-500/50" },
     { id: "done", label: t("lbl_done"), status: "done", color: "bg-emerald-500", glow: "shadow-emerald-500/50" },
   ];
