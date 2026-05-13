@@ -146,13 +146,31 @@ export default function Dashboard() {
         fetch("/api/logs")
       ]);
       
-      setStats(await statsRes.json());
-      setTasks(await tasksRes.json());
-      setWriters(await writersRes.json());
-      setWriterStats(await wStatsRes.json());
-      setClients(await clientsRes.json());
-      setExpenses(await expensesRes.json());
-      setLogs(await logsRes.json());
+      if (statsRes.ok) setStats(await statsRes.json());
+      if (tasksRes.ok) {
+        const data = await tasksRes.json();
+        setTasks(Array.isArray(data) ? data : []);
+      }
+      if (writersRes.ok) {
+        const data = await writersRes.json();
+        setWriters(Array.isArray(data) ? data : []);
+      }
+      if (wStatsRes.ok) {
+        const data = await wStatsRes.json();
+        setWriterStats(Array.isArray(data) ? data : []);
+      }
+      if (clientsRes.ok) {
+        const data = await clientsRes.json();
+        setClients(Array.isArray(data) ? data : []);
+      }
+      if (expensesRes.ok) {
+        const data = await expensesRes.json();
+        setExpenses(Array.isArray(data) ? data : []);
+      }
+      if (logsRes.ok) {
+        const data = await logsRes.json();
+        setLogs(Array.isArray(data) ? data : []);
+      }
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
       showNotification("Failed to load data", "error");

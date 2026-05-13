@@ -31,7 +31,8 @@ export function TaskModal({
     advancePaid: 0,
     bonus: 0,
     assignedTo: "Unassigned",
-    link: ""
+    link: "",
+    revisions: 0
   });
 
   useEffect(() => {
@@ -157,6 +158,29 @@ export function TaskModal({
             value={formData.assignedTo}
             onChange={(val) => setFormData({...formData, assignedTo: val})}
           />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{t('lbl_revisions')}</label>
+          <div className="flex items-center gap-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-2 rounded-xl w-fit">
+            <button 
+              type="button"
+              onClick={() => setFormData({...formData, revisions: Math.max(0, (formData.revisions || 0) - 1)})}
+              className="w-10 h-10 flex items-center justify-center rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-rose-500 transition-colors shadow-sm"
+            >
+              -
+            </button>
+            <span className="text-xl font-bold w-12 text-center text-zinc-900 dark:text-white tabular-nums">
+              {formData.revisions || 0}
+            </span>
+            <button 
+              type="button"
+              onClick={() => setFormData({...formData, revisions: (formData.revisions || 0) + 1})}
+              className="w-10 h-10 flex items-center justify-center rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-emerald-500 transition-colors shadow-sm"
+            >
+              +
+            </button>
+          </div>
         </div>
 
         <div className="pt-4">

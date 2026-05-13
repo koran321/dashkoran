@@ -33,10 +33,23 @@ export class TaskService {
             { 
               $match: { 
                 $expr: { 
-                  $or: [
-                    { $eq: ["$_id", "$$clientId"] },
-                    { $eq: ["$_id", { $toObjectId: "$$clientId" }] }
-                  ] 
+                  $eq: [
+                    { $toString: "$_id" }, 
+                    { 
+                      $convert: { 
+                        input: {
+                          $cond: {
+                            if: { $eq: [{ $type: "$$clientId" }, "object"] },
+                            then: "$$clientId._id",
+                            else: "$$clientId"
+                          }
+                        }, 
+                        to: "string", 
+                        onError: "", 
+                        onNull: "" 
+                      } 
+                    }
+                  ]
                 } 
               } 
             }
@@ -46,18 +59,27 @@ export class TaskService {
       },
       {
         $addFields: {
-          client: { $arrayElemAt: ["$clientData", 0] }
+          resolvedClient: { $arrayElemAt: ["$clientData", 0] }
         }
       },
       {
         $addFields: {
-          "client._id": { $toString: "$client._id" },
-          "clientName": "$client.name",
-          "clientUniversity": "$client.university",
+          "clientName": { 
+            $ifNull: [
+              "$resolvedClient.name", 
+              { $ifNull: ["$client.name", { $ifNull: ["$clientName", "N/A"] }] }
+            ] 
+          },
+          "clientUniversity": { 
+            $ifNull: [
+              "$resolvedClient.university", 
+              { $ifNull: ["$client.university", { $ifNull: ["$clientUniversity", "N/A"] }] }
+            ] 
+          },
           "_id": { $toString: "$_id" }
         }
       },
-      { $project: { clientData: 0 } }
+      { $project: { clientData: 0, resolvedClient: 0 } }
     ]).toArray();
   }
 

@@ -89,7 +89,21 @@ export const translations = {
     msg_auth_save: "Enter password to save changes.",
     msg_auth_phone: "Enter password to reveal phone numbers.",
     msg_auth_inv: "Enter password to download invoice.",
-    msg_auth_del: "Enter password to delete this item."
+    msg_auth_del: "Enter password to delete this item.",
+    lbl_revisions: "Revisions",
+    app_title: "Assignment Koran",
+    app_subtitle: "Order Tracking Portal",
+    track_order_title: "Track Your Order",
+    order_id_placeholder: "Enter Order ID (e.g. AK-7X9Z)",
+    fetching_order: "Fetching order details...",
+    val_client: "Valued Client",
+    lbl_rev: "Rev",
+    lbl_delivery: "Expected Delivery",
+    track_another: "Track another order",
+    lbl_pending: "Pending",
+    lbl_working: "Working",
+    lbl_review: "Review",
+    lbl_done: "Done"
   },
   bn: {
     title: "এজেন্সি ওএস",
@@ -181,7 +195,21 @@ export const translations = {
     msg_auth_save: "সেভ করতে পাসওয়ার্ড দিন।",
     msg_auth_phone: "ফোন নম্বর দেখতে পাসওয়ার্ড দিন।",
     msg_auth_inv: "ইনভয়েস ডাউনলোড করতে পাসওয়ার্ড দিন।",
-    msg_auth_del: "এটি ডিলিট করতে পাসওয়ার্ড দিন।"
+    msg_auth_del: "এটি ডিলিট করতে পাসওয়ার্ড দিন।",
+    lbl_revisions: "রিভিশন সংখ্যা",
+    app_title: "অ্যাসাইনমেন্ট করান",
+    app_subtitle: "অর্ডার ট্র্যাকিং পোর্টাল",
+    track_order_title: "আপনার অর্ডার ট্র্যাক করুন",
+    order_id_placeholder: "অর্ডার আইডি দিন (যেমন: AK-7X9Z)",
+    fetching_order: "অর্ডারের তথ্য সংগ্রহ করা হচ্ছে...",
+    val_client: "সম্মানিত গ্রাহক",
+    lbl_rev: "রিভিশন",
+    lbl_delivery: "ডেলিভারির সম্ভাব্য তারিখ",
+    track_another: "অন্য অর্ডার ট্র্যাক করুন",
+    lbl_pending: "অপেক্ষমান",
+    lbl_working: "চলমান",
+    lbl_review: "রিভিউ চলছে",
+    lbl_done: "সম্পন্ন"
   }
 };
 

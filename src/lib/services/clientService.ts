@@ -26,7 +26,25 @@ export class ClientService {
           pipeline: [
             {
               $match: {
-                $expr: { $eq: [{ $toString: "$client" }, "$$clientId"] }
+                $expr: { 
+                  $eq: [
+                    { 
+                      $convert: { 
+                        input: {
+                          $cond: {
+                            if: { $eq: [{ $type: "$client" }, "object"] },
+                            then: "$client._id",
+                            else: "$client"
+                          }
+                        }, 
+                        to: "string", 
+                        onError: "", 
+                        onNull: "" 
+                      } 
+                    }, 
+                    "$$clientId"
+                  ] 
+                }
               }
             },
             {
