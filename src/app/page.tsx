@@ -42,6 +42,8 @@ import { generatePDFInvoice } from "@/lib/invoice";
 import { containerVariants, itemVariants, tabVariants, textSwapVariants } from "@/lib/animations";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
+import { ApplicationsList } from "@/components/ApplicationsList";
+import { ClipboardList } from "lucide-react";
 
 export default function Dashboard() {
   const { theme, toggleTheme } = useTheme();
@@ -135,6 +137,7 @@ export default function Dashboard() {
   }
 
   async function fetchData() {
+    setLoading(true);
     try {
       const [statsRes, tasksRes, writersRes, wStatsRes, clientsRes, expensesRes, logsRes] = await Promise.all([
         fetch("/api/stats"),
@@ -483,6 +486,7 @@ export default function Dashboard() {
             { id: "clients", label: t('nav_clients'), icon: Users },
             { id: "writers", label: t('nav_writers'), icon: PenTool },
             { id: "expenses", label: t('nav_accounts'), icon: CreditCard },
+            { id: "applications", label: t('nav_applications'), icon: ClipboardList },
             { id: "invoices", label: t('nav_invoices'), icon: FileText },
           ].map((tab) => (
             <button
@@ -547,7 +551,7 @@ export default function Dashboard() {
               </div>
 
               {/* Charts */}
-              <DashboardCharts stats={stats} />
+              {!loading && <DashboardCharts stats={stats} />}
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
                 {/* Activity Logs */}
@@ -626,18 +630,19 @@ export default function Dashboard() {
                 tasks={filteredTasks} 
                 onUpdateStatus={updateTaskStatus} 
                 onEdit={(task) => { setEditingItem(task); setModals({...modals, task: true}); }} 
+                onDelete={handleDeleteTask}
               />
             </div>
           )}
 
           {activeTab === "completed" && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {tasks.filter(t => t.status === "done").length === 0 && (
+              {(tasks || []).filter(t => t.status === "done").length === 0 && (
                 <div className="col-span-full py-20 text-center">
                   <p className="text-zinc-500 font-bold uppercase tracking-widest">{t('no_done')}</p>
                 </div>
               )}
-              {tasks.filter(t => t.status === "done").map((task) => (
+              {(tasks || []).filter(t => t.status === "done").map((task) => (
                 <motion.div 
                   key={task._id}
                   variants={itemVariants}
@@ -682,7 +687,7 @@ export default function Dashboard() {
                  </div>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {clients.map((client) => (
+                {(clients || []).map((client) => (
                   <motion.div 
                     key={client._id}
                     variants={itemVariants}
@@ -693,7 +698,7 @@ export default function Dashboard() {
                         <button onClick={() => handleDeleteClient(client._id)} className="p-1.5 bg-white dark:bg-zinc-800 rounded-lg shadow-md hover:text-rose-500"><Trash2 size={14} /></button>
                     </div>
                     <div className="w-16 h-16 rounded-2xl bg-indigo-500 flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-indigo-500/20">
-                      {client.name.charAt(0)}
+                      {(client?.name || "C").charAt(0)}
                     </div>
                     <div>
                       <h4 className="font-bold text-zinc-900 dark:text-white">{client.name}</h4>
@@ -742,7 +747,7 @@ export default function Dashboard() {
                  </MagneticButton>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {writers.map((writer) => {
+                {(writers || []).map((writer) => {
                   const wStat = writerStats.find(s => s._id === writer.name || s._id === writer._id);
                   return (
                     <motion.div key={writer._id} variants={itemVariants}>
@@ -782,7 +787,7 @@ export default function Dashboard() {
                     </tr>
                   </thead>
                   <tbody className="text-xs font-medium divide-y divide-zinc-100 dark:divide-zinc-800">
-                    {expenses.map((exp) => (
+                    {(expenses || []).map((exp) => (
                       <tr key={exp._id} className="hover:bg-zinc-50 dark:hover:bg-white/5 transition-colors group">
                         <td className="px-6 py-4 text-zinc-500">{new Date(exp.date).toLocaleDateString()}</td>
                         <td className="px-6 py-4">
@@ -810,7 +815,7 @@ export default function Dashboard() {
             <div className="space-y-6">
               <h2 className="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-[4px]">{t('nav_invoices')}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {tasks.filter(t => t.status === "done").map((task) => (
+                {(tasks || []).filter(t => t.status === "done").map((task) => (
                   <motion.div 
                     key={task._id}
                     variants={itemVariants}
@@ -829,6 +834,17 @@ export default function Dashboard() {
                   </motion.div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {activeTab === "applications" && (
+            <div className="space-y-6">
+               <div className="flex justify-between items-center">
+                <h2 className="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-[4px]">{t('nav_applications')}</h2>
+              </div>
+              <ApplicationsList 
+                onAction={(fn, msg) => setPendingAction({ fn, message: msg, authType: "main" })} 
+              />
             </div>
           )}
         </motion.main>

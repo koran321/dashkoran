@@ -6,7 +6,8 @@ import {
   Edit, 
   GraduationCap, 
   Clock, 
-  GripVertical 
+  GripVertical,
+  Trash2
 } from "lucide-react";
 import { useTranslation } from "./LanguageProvider";
 import { useNotification } from "./NotificationProvider";
@@ -32,15 +33,17 @@ interface Task {
 export function KanbanBoard({ 
   tasks, 
   onUpdateStatus, 
-  onEdit 
+  onEdit,
+  onDelete
 }: { 
   tasks: Task[], 
   onUpdateStatus: (id: string, status: string) => void,
-  onEdit: (task: Task) => void
+  onEdit: (task: Task) => void,
+  onDelete?: (id: string) => void
 }) {
   const { t } = useTranslation();
   const { showNotification } = useNotification();
-  const [localTasks, setLocalTasks] = useState<Task[]>(tasks);
+  const [localTasks, setLocalTasks] = useState<Task[]>(tasks || []);
 
   useEffect(() => {
     setLocalTasks(tasks);
@@ -162,6 +165,15 @@ export function KanbanBoard({
                                     className="p-2 bg-black/20 hover:bg-white/10 rounded-xl text-zinc-400 hover:text-white border border-white/5 transition-all"
                                   >
                                     <Edit size={14} />
+                                  </motion.button>
+                                  <motion.button 
+                                    whileHover={{ scale: 1.2, rotate: -8 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    onPointerDown={(e) => e.stopPropagation()}
+                                    onClick={(e) => { e.stopPropagation(); onDelete?.(task._id); }} 
+                                    className="p-2 bg-black/20 hover:bg-rose-500/20 rounded-xl text-zinc-400 hover:text-rose-400 border border-white/5 transition-all"
+                                  >
+                                    <Trash2 size={14} />
                                   </motion.button>
                                   <motion.button 
                                     whileHover={{ scale: 1.2, rotate: -8 }}
