@@ -122,7 +122,12 @@ export const translations = {
     btn_submit_another: "Submit another application",
     lbl_verified_service: "Verified Service",
     lbl_support_247: "24/7 Support",
-    lbl_terms_msg: "By submitting, you agree to our terms of service. We handle your data with maximum confidentiality."
+    lbl_terms_msg: "By submitting, you agree to our terms of service. We handle your data with maximum confidentiality.",
+    app_list_pending: "Pending",
+    app_list_history: "History",
+    app_filter_all: "All",
+    app_filter_accepted: "Accepted",
+    app_filter_rejected: "Rejected"
   },
   bn: {
     title: "এজেন্সি ওএস",
@@ -247,7 +252,12 @@ export const translations = {
     btn_submit_another: "আরেকটি আবেদন জমা দিন",
     lbl_verified_service: "ভেরিফাইড সার্ভিস",
     lbl_support_247: "২৪/৭ সাপোর্ট",
-    lbl_terms_msg: "আবেদন করার মাধ্যমে আপনি আমাদের শর্তাবলীর সাথে একমত পোষণ করছেন। আমরা আপনার তথ্যের সর্বোচ্চ গোপনীয়তা রক্ষা করি।"
+    lbl_terms_msg: "আবেদন করার মাধ্যমে আপনি আমাদের শর্তাবলীর সাথে একমত পোষণ করছেন। আমরা আপনার তথ্যের সর্বোচ্চ গোপনীয়তা রক্ষা করি।",
+    app_list_pending: "অপেক্ষমান",
+    app_list_history: "ইতিহাস",
+    app_filter_all: "সব",
+    app_filter_accepted: "গৃহীত",
+    app_filter_rejected: "বাতিলকৃত"
   }
 };
 

@@ -102,7 +102,7 @@ export function ApplicationsList({ onAction }: ApplicationsListProps) {
             }`}
           >
             <Clock size={12} />
-            Pending
+            {t("app_list_pending")}
           </button>
           <button 
             onClick={() => setActiveTab("history")}
@@ -111,16 +111,16 @@ export function ApplicationsList({ onAction }: ApplicationsListProps) {
             }`}
           >
             <ArchiveIcon size={12} />
-            History
+            {t("app_list_history")}
           </button>
         </div>
 
         {activeTab === "history" && (
           <div className="flex bg-zinc-100 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-inner">
             {[
-              { id: "all", label: "All", icon: Filter },
-              { id: "accepted", label: "Accepted", icon: CheckCircle },
-              { id: "rejected", label: "Rejected", icon: XCircle }
+              { id: "all", label: t("app_filter_all"), icon: Filter },
+              { id: "accepted", label: t("app_filter_accepted"), icon: CheckCircle },
+              { id: "rejected", label: t("app_filter_rejected"), icon: XCircle }
             ].map((f) => (
               <button
                 key={f.id}
