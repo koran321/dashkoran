@@ -16,9 +16,10 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   try {
     const data = await req.json();
-    const success = await TaskService.update(params.id, data);
-    return NextResponse.json({ success });
+    await TaskService.update(params.id, data);
+    return NextResponse.json({ success: true });
   } catch (error: any) {
+    console.error("API Update Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

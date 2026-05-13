@@ -140,13 +140,13 @@ export default function Dashboard() {
     setLoading(true);
     try {
       const [statsRes, tasksRes, writersRes, wStatsRes, clientsRes, expensesRes, logsRes] = await Promise.all([
-        fetch("/api/stats"),
-        fetch("/api/tasks"),
-        fetch("/api/writers"),
-        fetch("/api/writers/stats"),
-        fetch("/api/clients"),
-        fetch("/api/accounts"),
-        fetch("/api/logs")
+        fetch("/api/stats", { cache: 'no-store' }),
+        fetch("/api/tasks", { cache: 'no-store' }),
+        fetch("/api/writers", { cache: 'no-store' }),
+        fetch("/api/writers/stats", { cache: 'no-store' }),
+        fetch("/api/clients", { cache: 'no-store' }),
+        fetch("/api/accounts", { cache: 'no-store' }),
+        fetch("/api/logs", { cache: 'no-store' })
       ]);
       
       if (statsRes.ok) setStats(await statsRes.json());
@@ -296,19 +296,25 @@ export default function Dashboard() {
   }
 
   async function updateTaskStatus(id: string, status: string) {
-    const action = async () => {
-        const res = await fetch(`/api/tasks/${id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status })
-        });
-        if (res.ok) {
-            fetchData();
-            showNotification(`Status updated to ${(status || '').replace('_', ' ')}`);
-        }
-    };
-
-    action();
+    try {
+      const res = await fetch(`/api/tasks/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+        cache: 'no-store'
+      });
+      
+      if (res.ok) {
+        await fetchData();
+        showNotification(`Status updated to ${(status || '').replace('_', ' ')}`);
+      } else {
+        throw new Error("Update failed");
+      }
+    } catch (error) {
+      console.error("Failed to update status:", error);
+      showNotification("Failed to update status", "error");
+      fetchData(); // Sync back to original state on failure
+    }
   }
 
   async function handleDeleteClient(id: string) {
