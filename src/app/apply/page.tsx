@@ -46,53 +46,134 @@ export default function ApplyPage() {
 
   const generatePDF = (token: string, data: typeof formData) => {
     const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
     
-    // Header
+    // --- Design Tokens ---
+    const primaryIndigo = "#4f46e5";
+    const textDark = "#1f2937";
+    const textLight = "#6b7280";
+    const bgIndigo = "#eef2ff";
+
+    // 1. BRANDED HEADER
     doc.setFillColor(79, 70, 229); // Indigo-600
-    doc.rect(0, 0, 210, 40, 'F');
+    doc.rect(0, 0, pageWidth, 40, 'F');
     
     doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(24);
-    doc.text("ASSIGNMENT KORAN", 105, 20, { align: 'center' });
+    doc.text("ASSIGNMENT KORAN", pageWidth / 2, 20, { align: 'center' });
     doc.setFontSize(10);
-    doc.text("APPLICATION RECEIPT", 105, 30, { align: 'center' });
+    doc.setFont("helvetica", "normal");
+    doc.text("OFFICIAL APPLICATION RECEIPT", pageWidth / 2, 30, { align: 'center' });
 
-    // Content
-    doc.setTextColor(30, 30, 30);
-    doc.setFontSize(12);
+    // 2. TRACKING INFO BOX (Centered)
+    const boxWidth = 140;
+    const boxX = (pageWidth - boxWidth) / 2;
+    const boxY = 55;
+
+    doc.setFillColor(238, 242, 255); // bgIndigo
+    doc.setDrawColor(79, 70, 229);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(boxX, boxY, boxWidth, 25, 3, 3, 'FD');
+
+    doc.setTextColor(textDark);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.text(`Tracking ID: ${token}`, pageWidth / 2, boxY + 10, { align: 'center' });
     
-    const tableData = [
-      ["Token ID", token],
-      ["Applicant Name", data.name],
-      ["Phone (WhatsApp)", data.phone],
-      ["Email", data.email || "N/A"],
-      ["Work Type", data.workType],
-      ["Date Applied", new Date().toLocaleDateString()],
-      ["Status", "Pending Review"]
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(textLight);
+    doc.text(`Submitted On: ${new Date().toLocaleString()}`, pageWidth / 2, boxY + 18, { align: 'center' });
+
+    // 3. APPLICATION DETAILS
+    doc.setTextColor(primaryIndigo);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("APPLICANT INFORMATION", margin, 95);
+
+    const applicantData = [
+      ["Name", data.name],
+      ["Email", data.email || "Not Provided"],
+      ["WhatsApp", data.phone],
+      ["University", "Public University"],
     ];
 
     autoTable(doc, {
-      startY: 50,
-      head: [['Field', 'Information']],
-      body: tableData,
-      theme: 'striped',
-      headStyles: { fillColor: [79, 70, 229] }
+      startY: 100,
+      margin: { left: margin, right: margin },
+      body: applicantData,
+      theme: 'plain',
+      styles: { fontSize: 10, cellPadding: 2, textColor: [31, 41, 55] },
+      columnStyles: { 0: { fontStyle: 'bold', cellWidth: 40, textColor: [107, 114, 128] } }
     });
 
-    // Details Section
-    const finalY = (doc as any).lastAutoTable.finalY + 10;
-    doc.setFontSize(14);
-    doc.text("Work Details:", 14, finalY);
-    doc.setFontSize(10);
-    const splitText = doc.splitTextToSize(data.details, 180);
-    doc.text(splitText, 14, finalY + 7);
+    const projectY = (doc as any).lastAutoTable.finalY + 15;
+    doc.setTextColor(primaryIndigo);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("PROJECT DETAILS", margin, projectY);
 
-    // Footer
+    const projectData = [
+      ["Work Type", data.workType],
+      ["Date Applied", new Date().toLocaleDateString()],
+      ["Initial Status", "Pending Review"],
+    ];
+
+    autoTable(doc, {
+      startY: projectY + 5,
+      margin: { left: margin, right: margin },
+      body: projectData,
+      theme: 'plain',
+      styles: { fontSize: 10, cellPadding: 2, textColor: [31, 41, 55] },
+      columnStyles: { 0: { fontStyle: 'bold', cellWidth: 40, textColor: [107, 114, 128] } }
+    });
+
+    // Work Details Text Block
+    const detailsY = (doc as any).lastAutoTable.finalY + 10;
+    doc.setFillColor(249, 250, 251);
+    doc.setDrawColor(229, 231, 235);
+    const detailsBoxHeight = 35;
+    doc.roundedRect(margin, detailsY, pageWidth - (margin * 2), detailsBoxHeight, 2, 2, 'FD');
+    
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(textLight);
+    doc.text("Requirement Summary:", margin + 5, detailsY + 7);
+    
+    doc.setFont("helvetica", "italic");
+    doc.setTextColor(textDark);
+    const splitText = doc.splitTextToSize(data.details, pageWidth - (margin * 2) - 10);
+    doc.text(splitText, margin + 5, detailsY + 14);
+
+    // 4. NEXT STEPS
+    const stepsY = detailsY + detailsBoxHeight + 15;
+    doc.setTextColor(primaryIndigo);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("NEXT STEPS", margin, stepsY);
+
     doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    const pageHeight = doc.internal.pageSize.height;
-    doc.text("Contact us: +8801875191553 | fb.com/assignmentkoran", 105, pageHeight - 20, { align: 'center' });
-    doc.text("Our coordinator will contact you shortly.", 105, pageHeight - 15, { align: 'center' });
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(textDark);
+    const steps = [
+      "✓ We've received your application and tokenized it.",
+      "✓ Our coordinator will review your details within 24 hours.",
+      "✓ You will be contacted via WhatsApp/Phone for confirmation.",
+      "✓ Please keep this receipt for future tracking."
+    ];
+    steps.forEach((step, i) => {
+      doc.text(step, margin, stepsY + 10 + (i * 7));
+    });
+
+    // 5. FOOTER
+    doc.setFontSize(9);
+    doc.setTextColor(textLight);
+    doc.text("Questions? Contact us at support@assignmentkoran.com", pageWidth / 2, pageHeight - 20, { align: 'center' });
+    doc.setFont("helvetica", "bold");
+    doc.text("www.assignmentkoran.com", pageWidth / 2, pageHeight - 15, { align: 'center' });
 
     doc.save(`AK-APP-${token}.pdf`);
   };
