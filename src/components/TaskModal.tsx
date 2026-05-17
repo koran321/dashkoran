@@ -32,7 +32,8 @@ export function TaskModal({
     bonus: 0,
     assignedTo: "Unassigned",
     link: "",
-    revisions: 0
+    revisions: 0,
+    status: "pending"
   });
 
   useEffect(() => {
@@ -52,7 +53,8 @@ export function TaskModal({
         advancePaid: 0,
         bonus: 0,
         assignedTo: "Unassigned",
-        link: ""
+        link: "",
+        status: "pending"
       });
     }
   }, [task, isOpen]);

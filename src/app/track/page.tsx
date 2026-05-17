@@ -203,7 +203,9 @@ export default function TrackingPage() {
                 <div>
                   <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest leading-none mb-1.5">{t("lbl_delivery")}</p>
                   <p className="text-sm font-bold text-zinc-900 dark:text-white">
-                    {new Date(task.deadline).toLocaleDateString(lang === 'en' ? 'en-GB' : 'bn-BD', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    {task.deadline && !isNaN(Date.parse(task.deadline))
+                      ? new Date(task.deadline).toLocaleDateString(lang === 'en' ? 'en-GB' : 'bn-BD', { day: 'numeric', month: 'short', year: 'numeric' })
+                      : (lang === 'en' ? "No Deadline" : "ডেডলাইন নেই")}
                   </p>
                 </div>
               </div>

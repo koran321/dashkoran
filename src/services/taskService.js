@@ -98,6 +98,7 @@ export class TaskService {
     const db = await getDb();
     const orderId = Math.random().toString(36).substring(2, 8).toUpperCase();
     const result = await db.collection("assignment").insertOne({
+      status: "pending",
       ...taskData,
       orderId,
       createdAt: new Date(),

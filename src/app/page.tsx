@@ -374,8 +374,8 @@ export default function Dashboard() {
 
   // --- FILTERS ---
   const filteredTasks = tasks.filter(task => {
-    const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         task.orderId.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = (task.title || "").toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         (task.orderId || "").toLowerCase().includes(searchQuery.toLowerCase());
     const matchesType = typeFilter === "all" || task.workType === typeFilter;
     const matchesAssignee = assigneeFilter === "all" || task.assignedTo === assigneeFilter;
     return matchesSearch && matchesType && matchesAssignee;

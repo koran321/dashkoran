@@ -197,7 +197,9 @@ export function KanbanBoard({
                                     <div className="flex items-center gap-2 bg-rose-500/5 px-3 py-1.5 rounded-full border border-rose-500/10">
                                       <Clock size={12} className="text-rose-400" />
                                       <span className="text-[9px] font-black text-rose-400 uppercase tracking-widest">
-                                        {new Date(task.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                                        {task.deadline && !isNaN(Date.parse(task.deadline))
+                                          ? new Date(task.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+                                          : "No Deadline"}
                                       </span>
                                     </div>
                                 </div>
