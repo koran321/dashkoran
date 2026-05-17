@@ -154,7 +154,7 @@ export default function TrackingPage() {
                   {task.title}
                 </h2>
                 <p className="text-sm text-zinc-500 font-medium">
-                  Order for <span className="text-indigo-600 dark:text-indigo-400 font-bold">{task.clientName && task.clientName !== 'N/A' ? task.clientName : t("val_client")}</span>
+                  {lang === 'en' ? "Order for " : ""}<span className="text-indigo-600 dark:text-indigo-400 font-bold">{task.clientName && task.clientName !== 'N/A' ? task.clientName : t("val_client")}</span>{lang === 'bn' ? " এর অর্ডার" : ""}
                 </p>
               </div>
               
